@@ -1,0 +1,40 @@
+---
+interface Props {
+  post: any;
+  collection?: string;
+}
+const { post, collection = 'blog' } = Astro.props;
+const hero = post?.data?.heroImage as string;
+const basePath = hero ? `/assets${hero.startsWith('/') ? hero : `/${hero}`}` : '';
+const widths = [320, 480, 640, 768, 960];
+const quality = 60;
+const srcset = basePath
+  ? widths.map((w) => `${basePath}?nf_resize=fit&w=${w}&q=${quality} ${w}w`).join(', ')
+  : '';
+const sizes = "(max-width: 768px) 100vw, 50vw";
+import FormattedDate from "@/components/FormattedDate.astro";
+---
+<a
+  href={`/${collection}/${post.id}/`}
+  class="relative gap-2 grid md:grid-cols-2 items-start"
+>
+  {hero && (
+    <img
+      src={`${basePath}?nf_resize=fit&w=640&q=${quality}`}
+      srcset={srcset}
+      sizes={sizes}
+      alt=""
+      class="miniature object-cover "
+      loading="lazy"
+      decoding="async"
+    />
+  )}
+  <div class="flex flex-col col-span-1 md:pr-6">
+    <p class="font-bold text-xl">{post.data.title}</p>
+    <p>{post.data.description}</p>
+    <div class="flex items-center">
+      <FormattedDate date={new Date(post.data.pubDate)} />
+    </div>
+    <p></p>
+  </div>
+</a>

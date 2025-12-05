@@ -1,0 +1,58 @@
+---
+import type { CollectionEntry } from "astro:content";
+import FormattedDate from "../components/FormattedDate.astro";
+import Layout from "./Layout.astro";
+import { Icon } from "astro-icon/components";
+type Props = CollectionEntry<"blog">["data"];
+const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+let basePath = "";
+const widths = [320, 480, 640, 768, 960, 1200, 1600];
+const quality = 70;
+let srcset = "";
+const sizes = "(max-width: 768px) 100vw, 1000px";
+if (typeof heroImage === "string") {
+  basePath = `/assets${heroImage.startsWith("/") ? heroImage : `/${heroImage}`}`;
+  srcset = widths
+    .map((w) => `${basePath}?nf_resize=fit&w=${w}&q=${quality} ${w}w`)
+    .join(", ");
+}
+---
+
+<Layout>
+  <a href="javascript:history.back()" class="self-center container pt-10 "
+    ><Icon name="arrow" class="w-10 h-10 -rotate-90 pt-20" />
+    <article class="pb-40">
+      <div class="flex flex-grow md:py-20 justify-center items-center">
+        {
+          heroImage && (
+            <img
+              class="max-w-[1000px] max-h-[70vh] object-contain"
+              src={`${basePath}?nf_resize=fit&w=960&q=${quality}`}
+              srcset={srcset}
+              sizes={sizes}
+              alt={title}
+              loading="lazy"
+              decoding="async"
+            />
+          )
+        }
+      </div>
+      <div class="flex flex-col gap-6 px-5" >
+        <div class="border-b pb-4">
+          <h1 class="font-semibold text-4xl mb-2">{title}</h1>
+          <div class="text-lg">
+            <FormattedDate date={pubDate} />
+            {
+              updatedDate && (
+                <div class="text-sm">
+                  Last updated on <FormattedDate date={updatedDate} />
+                </div>
+              )
+            }
+          </div>
+        </div>
+        <slot />
+      </div>
+    </article>
+  </a>
+</Layout>

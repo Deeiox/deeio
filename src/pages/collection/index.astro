@@ -1,0 +1,32 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import CardLanding from "@/components/ui/CardLanding.astro";
+
+import Destacado from "@/components/ui/Destacado.astro";
+const posts = (await getCollection("collection")).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<Layout>
+  <section
+    class="overflow-hidden md:max-h-[100vh] self-center md:px-6 no-scrollbar flex md:flex-row flex-col-reverse"
+  >
+    <div class="grid md:grid-cols-2 gap-x-6 md:mb-40">
+      <div>
+        <Destacado post={posts[0]} collection="collection" />
+      </div>
+      <ul
+        class="flex flex-col gap-10 py-10 p-2 max-w-full overflow-y-scroll no-scrollbar"
+      >
+        {posts.map((post) => <CardLanding post={post} collection="collection" />)}
+      </ul>
+    </div>
+    <div
+      class="text-4xl max-w-72 md:max-w-none md:text-9xl md:h-[100vh] w-20 relative mr-10"
+    >
+      <p class="md:rotate-90 mt-40 md:text-nowrap font-fugaz">Collection</p>
+    </div>
+  </section>
+</Layout>

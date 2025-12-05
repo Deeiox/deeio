@@ -1,0 +1,36 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Card from "@/components/ui/Card.astro";
+const posts = (await getCollection("blog")).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+import { Icon } from "astro-icon/components";
+---
+
+<Layout>
+  <section
+    class="overflow-scroll max-h-fit flex flex-col gap-20 py-10 max-w-[1000px] self-center px-6 no-scrollbar"
+  >
+    <h1 class="text-4xl md:text-7xl font-fugaz font-bold mx-auto pt-30">My blog</h1>
+    <div>
+      <div class="grid md:grid-cols-2 gap-x-20 mb-40">
+        <ul class="space-y-6">
+          {
+            posts
+              .filter((_, index) => index % 2 === 0)
+              .map((post) => <Card post={post} />)
+          }
+        </ul>
+
+        <ul class="space-y-6">
+          {
+            posts
+              .filter((_, index) => index % 2 !== 0)
+              .map((post) => <Card post={post} />)
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,49 @@
+---
+interface Props {
+  post: any;
+}
+
+const { post } = Astro.props;
+const hero = post?.data?.heroImage as string;
+const basePath = hero ? `/assets${hero.startsWith('/') ? hero : `/${hero}`}` : '';
+const widths = [200, 300, 400, 600];
+const quality = 60;
+const srcset = basePath
+  ? widths.map((w) => `${basePath}?nf_resize=fit&w=${w}&q=${quality} ${w}w`).join(', ')
+  : '';
+const sizes = "(max-width: 768px) 100vw, 384px";
+
+const getRandomMargin = () => {
+  const margins = ["mt-36", "mt-72", "mt-56", "mt-96"];
+  return margins[Math.floor(Math.random() * margins.length)];
+};
+var margin = "";
+if (post.id === "img2") {
+  margin = "!mt-0";
+}
+import FormattedDate from "@/components/FormattedDate.astro";
+---
+
+<li class={`md:${getRandomMargin()} ${margin} relative`}>
+  <a
+    href={`/blog/${post.id}/`}
+    class="relative flex flex-col gap-2 p-6 max-w-96"
+  >
+    {hero && (
+      <img
+        src={`${basePath}?nf_resize=fit&w=400&q=${quality}`}
+        srcset={srcset}
+        sizes={sizes}
+        alt={post.data.title}
+        class="w-full"
+        loading="lazy"
+        decoding="async"
+      />
+    )}
+
+    <p class="font-bold text-xl">{post.data.title}</p>
+  </a>
+  <p class="absolute rotate-90 -right-8 bottom-24">
+    <FormattedDate date={new Date(post.data.pubDate)} />
+  </p>
+</li>
