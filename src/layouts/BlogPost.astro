@@ -19,8 +19,10 @@ if (typeof heroImage === "string") {
 ---
 
 <Layout>
-  <a href="javascript:history.back()" class="self-center container pt-10 "
-    ><Icon name="arrow" class="w-10 h-10 -rotate-90 pt-20" />
+  <div class="self-center container pt-10 ">
+    <a href="javascript:history.back()">
+      <Icon name="arrow" class="w-10 h-10 -rotate-90 pt-20" />
+    </a>
     <article class="pb-40">
       <div class="flex flex-grow md:py-20 justify-center items-center">
         {
@@ -37,7 +39,7 @@ if (typeof heroImage === "string") {
           )
         }
       </div>
-      <div class="flex flex-col gap-6 px-5" >
+      <div class="flex flex-col gap-6 px-5 max-w-3xl mx-auto" >
         <div class="border-b pb-4">
           <h1 class="font-semibold text-4xl mb-2">{title}</h1>
           <div class="text-lg">
@@ -54,5 +56,5 @@ if (typeof heroImage === "string") {
         <slot />
       </div>
     </article>
-  </a>
+  </div>
 </Layout>
