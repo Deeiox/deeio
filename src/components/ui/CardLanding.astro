@@ -1,18 +1,20 @@
 ---
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import FormattedDate from '@/components/FormattedDate.astro';
 
 interface Props {
   post: any;
   collection?: string;
 }
+
 const { post, collection = 'blog' } = Astro.props;
 const hero = post?.data?.heroImage as ImageMetadata | undefined;
-
-import FormattedDate from "@/components/FormattedDate.astro";
+const postUrl = `/${collection}/${post.id}/`;
 ---
+
 <a
-  href={`/${collection}/${post.id}/`}
+  href={postUrl}
   class="relative gap-2 grid md:grid-cols-2 items-start"
 >
   {hero && (
@@ -32,6 +34,5 @@ import FormattedDate from "@/components/FormattedDate.astro";
     <div class="flex items-center">
       <FormattedDate date={new Date(post.data.pubDate)} />
     </div>
-    <p></p>
   </div>
 </a>

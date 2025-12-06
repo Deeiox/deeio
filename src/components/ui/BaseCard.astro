@@ -1,0 +1,31 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import FormattedDate from '@/components/FormattedDate.astro';
+
+interface Props {
+  post: any;
+  collection?: string;
+}
+
+const { post, collection = 'blog' } = Astro.props;
+const hero = post?.data?.heroImage as ImageMetadata | undefined;
+const postUrl = `/${collection}/${post.id}/`;
+
+// Shared utilities
+export const getRandomMargin = () => {
+  const margins = ['mt-36', 'mt-72', 'mt-56', 'mt-96'];
+  return margins[Math.floor(Math.random() * margins.length)];
+};
+
+// Format description to have line break after first two words
+export const formatDescription = (description: string) => {
+  const words = description.split(' ');
+  if (words.length > 2) {
+    return `${words[0]} ${words[1]}<br />${words.slice(2).join(' ')}`;
+  }
+  return description;
+};
+---
+
+<!-- This is a base card component with shared logic. It doesn't render anything directly. -->

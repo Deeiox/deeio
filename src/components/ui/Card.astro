@@ -1,6 +1,8 @@
 ---
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import FormattedDate from '@/components/FormattedDate.astro';
+import { getRandomMargin } from './BaseCard.astro';
 
 interface Props {
   post: any;
@@ -8,21 +10,17 @@ interface Props {
 
 const { post } = Astro.props;
 const hero = post?.data?.heroImage as ImageMetadata | undefined;
+const postUrl = `/blog/${post.id}/`;
 
-const getRandomMargin = () => {
-  const margins = ["mt-36", "mt-72", "mt-56", "mt-96"];
-  return margins[Math.floor(Math.random() * margins.length)];
-};
-var margin = "";
-if (post.id === "img2") {
-  margin = "!mt-0";
+let margin = '';
+if (post.id === 'img2') {
+  margin = '!mt-0';
 }
-import FormattedDate from "@/components/FormattedDate.astro";
 ---
 
 <li class={`md:${getRandomMargin()} ${margin} relative`}>
   <a
-    href={`/blog/${post.id}/`}
+    href={postUrl}
     class="relative flex flex-col gap-2 p-6 max-w-96"
   >
     {hero && (

@@ -1,7 +1,8 @@
 ---
-import type { Post } from "@/consts";
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import FormattedDate from '@/components/FormattedDate.astro';
+import { formatDescription } from './BaseCard.astro';
 
 interface Props {
   post: any;
@@ -11,25 +12,17 @@ interface Props {
 const { post, collection = 'blog' } = Astro.props;
 const hero = post?.data?.heroImage as ImageMetadata | undefined;
 const quality = 80;
+const postUrl = `/${collection}/${post.id}/`;
+const formattedDescription = formatDescription(post.data.description);
 
-var margin = "";
-if (post.id === "img2") {
-  margin = "!mt-0";
-}
-import FormattedDate from "@/components/FormattedDate.astro";
-const description = post.data.description;
-const words = description.split(' ');
-let formattedDescription = '';
-
-if (words.length > 2) {
-  formattedDescription = `${words[0]} ${words[1]}<br />${words.slice(2).join(' ')}`;
-} else {
-  formattedDescription = description; // Si tiene 2 palabras o menos, no modificamos
+let margin = '';
+if (post.id === 'img2') {
+  margin = '!mt-0';
 }
 ---
 
 <a
-  href={`/${collection}/${post.id}/`}
+  href={postUrl}
   class="flex flex-grow h-[100vh] w-full text-white object-cover relative py-10"
 >
 <div class="bg-black">
