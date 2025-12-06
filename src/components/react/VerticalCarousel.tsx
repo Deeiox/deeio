@@ -25,6 +25,11 @@ const VerticalCarousel: React.FC<VerticalCarouselProps> = ({
   const y = useMotionValue(0);
   const x = useMotionValue(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const touchStartX = useRef<number>(0);
+  const touchStartY = useRef<number>(0);
+  const prevX = useRef<number>(0);
+  const prevY = useRef<number>(0);
 
   useEffect(() => {
     // Detecta si es mobile
@@ -58,12 +63,14 @@ const VerticalCarousel: React.FC<VerticalCarouselProps> = ({
     y.set(0);
     x.set(0);
     lastTsRef.current = null;
+    prevX.current = 0;
+    prevY.current = 0;
   }, [images, scrollSpeed, interval, y, x]);
 
   useAnimationFrame((t, delta) => {
     const container = carouselRef.current;
     const content = contentRef.current;
-    if (!container || !content || images.length === 0) return;
+    if (!container || !content || images.length === 0 || isDragging) return;
 
     const pixelsPerSecond = (scrollSpeed * 1000) / Math.max(1, interval);
     const distance = (pixelsPerSecond * delta) / 1000; // px por frame
@@ -81,6 +88,7 @@ const VerticalCarousel: React.FC<VerticalCarouselProps> = ({
         nextX = 0; // reinicio de bucle
       }
       x.set(nextX);
+      prevX.current = nextX;
     } else {
       // Scroll vertical en desktop
       const maxScroll = Math.max(
@@ -94,8 +102,54 @@ const VerticalCarousel: React.FC<VerticalCarouselProps> = ({
         nextY = 0; // reinicio de bucle
       }
       y.set(nextY);
+      prevY.current = nextY;
     }
   });
+
+  // Manejo de eventos táctiles para el carrusel horizontal en mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!isMobile) return;
+    setIsDragging(true);
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    prevX.current = x.get();
+    prevY.current = y.get();
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isMobile || !isDragging) return;
+    e.preventDefault(); // Evitar desplazamiento de página
+    
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const diffX = currentX - touchStartX.current;
+    const diffY = currentY - touchStartY.current;
+    
+    // Solo permitir desplazamiento horizontal si el movimiento es mayor que el vertical
+    if (Math.abs(diffX) > Math.abs(diffY)) {
+      const nextX = prevX.current + diffX;
+      x.set(nextX);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (!isMobile || !isDragging) return;
+    setIsDragging(false);
+    
+    const container = carouselRef.current;
+    const content = contentRef.current;
+    if (!container || !content) return;
+    
+    const maxScroll = Math.max(0, content.scrollWidth - container.clientWidth);
+    let finalX = x.get();
+    
+    // Ajustar posición final para mantener el carrusel en límites
+    if (finalX > 0) {
+      x.set(0);
+    } else if (Math.abs(finalX) > maxScroll) {
+      x.set(-maxScroll);
+    }
+  };
 
   if (images.length === 0) {
     return (
@@ -115,7 +169,14 @@ const VerticalCarousel: React.FC<VerticalCarouselProps> = ({
   }
 
   return (
-    <div className={`w-full overflow-hidden relative ${isMobile ? 'h-[calc(100vh-12rem)]' : 'h-screen'}`} ref={carouselRef}>
+    <div 
+      className={`w-full overflow-hidden relative ${isMobile ? 'h-[calc(100vh-12rem)]' : 'h-screen'}`} 
+      ref={carouselRef}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={() => setIsDragging(false)}
+    >
       <motion.div
         ref={contentRef}
         style={{ 
