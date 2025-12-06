@@ -115,7 +115,7 @@ const VerticalCarousel: React.FC<VerticalCarouselProps> = ({
   }
 
   return (
-    <div className="h-screen w-full overflow-hidden relative" ref={carouselRef}>
+    <div className={`w-full overflow-hidden relative ${isMobile ? 'h-[calc(100vh-12rem)]' : 'h-screen'}`} ref={carouselRef}>
       <motion.div
         ref={contentRef}
         style={{ 
@@ -126,7 +126,7 @@ const VerticalCarousel: React.FC<VerticalCarouselProps> = ({
         className={`h-full flex gap-10 ${isMobile ? 'flex-row items-center' : 'flex-col'}`}
       >
         {images.map(({ src, alt }, index) => (
-          <div key={index} className={`flex flex-grow justify-center ${isMobile ? 'h-full min-w-[100vw]' : 'w-full'}`}>
+          <div key={index} className={`flex flex-grow justify-center items-center ${isMobile ? 'h-full min-w-[100vw]' : 'w-full'}`}>
             <img
               src={src}
               alt={alt}
@@ -134,7 +134,7 @@ const VerticalCarousel: React.FC<VerticalCarouselProps> = ({
               decoding="async"
               draggable={false}
               fetchPriority={index === 0 ? "high" : "auto"}
-              className={`object-contain ${isMobile ? 'max-h-[80vh] max-w-[90vw]' : 'max-w-full max-h-[80vh]'}`}
+              className={`object-contain ${isMobile ? 'max-h-[90vh] max-w-full' : 'max-w-full max-h-[80vh]'}`}
             />
           </div>
         ))}
