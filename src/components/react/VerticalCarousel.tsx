@@ -30,9 +30,6 @@ const VerticalCarousel: React.FC<VerticalCarouselProps> = ({
   const touchStartY = useRef<number>(0);
   const prevX = useRef<number>(0);
   const prevY = useRef<number>(0);
-  const touchVelocity = useRef<number>(0);
-  const touchTime = useRef<number>(0);
-  const touchPositions = useRef<{x: number, time: number}[]>([]);
 
   useEffect(() => {
     // Detecta si es mobile
@@ -117,9 +114,6 @@ const VerticalCarousel: React.FC<VerticalCarouselProps> = ({
     touchStartY.current = e.touches[0].clientY;
     prevX.current = x.get();
     prevY.current = y.get();
-    touchVelocity.current = 0;
-    touchPositions.current = [];
-    touchTime.current = Date.now();
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -130,32 +124,11 @@ const VerticalCarousel: React.FC<VerticalCarouselProps> = ({
     const currentY = e.touches[0].clientY;
     const diffX = currentX - touchStartX.current;
     const diffY = currentY - touchStartY.current;
-    const currentTime = Date.now();
     
     // Solo permitir desplazamiento horizontal si el movimiento es mayor que el vertical
     if (Math.abs(diffX) > Math.abs(diffY)) {
       const nextX = prevX.current + diffX;
       x.set(nextX);
-      
-      // Registrar posición y tiempo para calcular velocidad
-      touchPositions.current.push({ x: currentX, time: currentTime });
-      
-      // Mantener solo las últimas 5 posiciones para cálculo preciso
-      if (touchPositions.current.length > 5) {
-        touchPositions.current.shift();
-      }
-      
-      // Calcular velocidad
-      if (touchPositions.current.length > 1) {
-        const firstPos = touchPositions.current[0];
-        const lastPos = touchPositions.current[touchPositions.current.length - 1];
-        const timeDiff = lastPos.time - firstPos.time;
-        const distanceDiff = lastPos.x - firstPos.x;
-        
-        if (timeDiff > 0) {
-          touchVelocity.current = distanceDiff / timeDiff; // px por ms
-        }
-      }
     }
   };
 
@@ -168,48 +141,13 @@ const VerticalCarousel: React.FC<VerticalCarouselProps> = ({
     if (!container || !content) return;
     
     const maxScroll = Math.max(0, content.scrollWidth - container.clientWidth);
-    let currentX = x.get();
+    let finalX = x.get();
     
-    // Aplicar efecto de inercia
-    if (Math.abs(touchVelocity.current) > 0.1) {
-      const inertiaStrength = 300; // Fuerza de inercia
-      const decayFactor = 0.98; // Factor de desaceleración
-      const duration = 1000; // Duración máxima de inercia (ms)
-      const steps = 60; // Pasos de animación
-      const stepDuration = duration / steps;
-      
-      let currentVelocity = touchVelocity.current * inertiaStrength;
-      let step = 0;
-      
-      const applyInertia = () => {
-        if (step >= steps || Math.abs(currentVelocity) < 1) return;
-        
-        currentX += currentVelocity;
-        currentVelocity *= decayFactor;
-        
-        // Ajustar posición final para mantener el carrusel en límites
-        if (currentX > 0) {
-          currentX = 0;
-        } else if (Math.abs(currentX) > maxScroll) {
-          currentX = -maxScroll;
-        }
-        
-        x.set(currentX);
-        step++;
-        
-        setTimeout(() => {
-          applyInertia();
-        }, stepDuration);
-      };
-      
-      applyInertia();
-    } else {
-      // Sin inercia, solo ajustar límites
-      if (currentX > 0) {
-        x.set(0);
-      } else if (Math.abs(currentX) > maxScroll) {
-        x.set(-maxScroll);
-      }
+    // Ajustar posición final para mantener el carrusel en límites
+    if (finalX > 0) {
+      x.set(0);
+    } else if (Math.abs(finalX) > maxScroll) {
+      x.set(-maxScroll);
     }
   };
 
