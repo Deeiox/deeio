@@ -1,19 +1,16 @@
 ---
 import type { Post } from "@/consts";
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
 interface Props {
   post: any;
   collection?: string;
 }
 
 const { post, collection = 'blog' } = Astro.props;
-const hero = post?.data?.heroImage as string;
-const basePath = hero ? `/assets${hero.startsWith('/') ? hero : `/${hero}`}` : '';
-const widths = [640, 768, 1024, 1280, 1536];
-const quality = 60;
-const srcset = basePath
-  ? widths.map((w) => `${basePath}?nf_resize=fit&w=${w}&q=${quality} ${w}w`).join(', ')
-  : '';
-const sizes = "100vw";
+const hero = post?.data?.heroImage as ImageMetadata | undefined;
+const quality = 80;
 
 var margin = "";
 if (post.id === "img2") {
@@ -37,11 +34,11 @@ if (words.length > 2) {
 >
 <div class="bg-black">
   {hero && (
-    <img
-      src={`${basePath}?nf_resize=fit&w=1280&q=${quality}`}
-      srcset={srcset}
-      sizes={sizes}
-      alt=""
+    <Image
+      src={hero}
+      width={1280}
+      quality={quality}
+      alt={post.data.title}
       class="w-full h-full object-cover opacity-50"
       loading="lazy"
       decoding="async"

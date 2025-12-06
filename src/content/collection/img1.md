@@ -2,7 +2,7 @@
 title: '测试中文 ask 打开是的放声大哭浪费就开始劳动纠纷健身房'
 description: '这是描述文字萨迪克就爱上肯德基阿珂链接打开啦时间撒旦法是啊肯德基卡拉斯科链接啊啥的就'
 pubDate: 'Jul 08 2025'
-heroImage: '/city1.webp'
+heroImage: ./city1.webp
 ---
 
 

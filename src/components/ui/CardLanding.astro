@@ -1,17 +1,14 @@
 ---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
 interface Props {
   post: any;
   collection?: string;
 }
 const { post, collection = 'blog' } = Astro.props;
-const hero = post?.data?.heroImage as string;
-const basePath = hero ? `/assets${hero.startsWith('/') ? hero : `/${hero}`}` : '';
-const widths = [320, 480, 640, 768, 960];
-const quality = 60;
-const srcset = basePath
-  ? widths.map((w) => `${basePath}?nf_resize=fit&w=${w}&q=${quality} ${w}w`).join(', ')
-  : '';
-const sizes = "(max-width: 768px) 100vw, 50vw";
+const hero = post?.data?.heroImage as ImageMetadata | undefined;
+
 import FormattedDate from "@/components/FormattedDate.astro";
 ---
 <a
@@ -19,12 +16,12 @@ import FormattedDate from "@/components/FormattedDate.astro";
   class="relative gap-2 grid md:grid-cols-2 items-start"
 >
   {hero && (
-    <img
-      src={`${basePath}?nf_resize=fit&w=640&q=${quality}`}
-      srcset={srcset}
-      sizes={sizes}
-      alt=""
-      class="miniature object-cover "
+    <Image
+      src={hero}
+      width={1280}
+      quality={80}
+      alt={post.data.title}
+      class="miniature object-cover"
       loading="lazy"
       decoding="async"
     />

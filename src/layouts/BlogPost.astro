@@ -3,19 +3,9 @@ import type { CollectionEntry } from "astro:content";
 import FormattedDate from "../components/FormattedDate.astro";
 import Layout from "./Layout.astro";
 import { Icon } from "astro-icon/components";
+import { Image } from "astro:assets";
 type Props = CollectionEntry<"blog">["data"];
 const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
-let basePath = "";
-const widths = [320, 480, 640, 768, 960, 1200, 1600];
-const quality = 70;
-let srcset = "";
-const sizes = "(max-width: 768px) 100vw, 1000px";
-if (typeof heroImage === "string") {
-  basePath = `/assets${heroImage.startsWith("/") ? heroImage : `/${heroImage}`}`;
-  srcset = widths
-    .map((w) => `${basePath}?nf_resize=fit&w=${w}&q=${quality} ${w}w`)
-    .join(", ");
-}
 ---
 
 <Layout>
@@ -27,12 +17,12 @@ if (typeof heroImage === "string") {
       <div class="flex flex-grow md:py-20 justify-center items-center">
         {
           heroImage && (
-            <img
-              class="max-w-[1000px] max-h-[70vh] object-contain"
-              src={`${basePath}?nf_resize=fit&w=960&q=${quality}`}
-              srcset={srcset}
-              sizes={sizes}
+            <Image
+              src={heroImage}
               alt={title}
+              class="max-w-[1000px] max-h-[70vh] object-contain"
+              width={1600}
+              quality={80}
               loading="lazy"
               decoding="async"
             />
