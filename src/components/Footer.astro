@@ -7,9 +7,18 @@ import { getCollection } from "astro:content";
 const blogEntries = await getCollection("blog");
 const collectionEntries = await getCollection("collection");
 
-// 限制最多显示5个文章
-const limitedBlogEntries = blogEntries.slice(0, 5);
-const limitedCollectionEntries = collectionEntries.slice(0, 5);
+// 确保按发布日期排序，只显示最新的5篇文章
+const sortedBlogEntries = [...blogEntries].sort((a, b) => {
+  return new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime();
+});
+
+const sortedCollectionEntries = [...collectionEntries].sort((a, b) => {
+  return new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime();
+});
+
+// 严格限制最多显示5个文章
+const limitedBlogEntries = sortedBlogEntries.slice(0, 5);
+const limitedCollectionEntries = sortedCollectionEntries.slice(0, 5);
 // Helper para derivar slug desde id (remueve directorio y extensión)
 const toSlugFromId = (id: string) =>
   id.replace(/^.*\//, "").replace(/\.(md|mdx)$/i, "");
