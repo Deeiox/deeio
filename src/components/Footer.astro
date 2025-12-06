@@ -7,10 +7,9 @@ import { getCollection } from "astro:content";
 const blogEntries = await getCollection("blog");
 const collectionEntries = await getCollection("collection");
 
-// Dividimos el blog en dos columnas para ocupar 2 listas
-const midPoint = Math.ceil(blogEntries.length / 2);
-const blogCol1: any = blogEntries.slice(0, midPoint);
-const blogCol2 = blogEntries.slice(midPoint);
+// 限制最多显示5个文章
+const limitedBlogEntries = blogEntries.slice(0, 5);
+const limitedCollectionEntries = collectionEntries.slice(0, 5);
 // Helper para derivar slug desde id (remueve directorio y extensión)
 const toSlugFromId = (id: string) =>
   id.replace(/^.*\//, "").replace(/\.(md|mdx)$/i, "");
@@ -37,7 +36,7 @@ const toSlugFromId = (id: string) =>
     </div>
     <hr class="col-span-1 md:col-span-2" />
     <div
-      class="col-span-1 md:col-span-2 justify-between grid md:grid-cols-4 px-6 items-start gap-6 md:gap-0"
+      class="col-span-1 md:col-span-2 justify-between grid md:grid-cols-3 px-6 items-start gap-6 md:gap-0"
     >
       <div>
         <h2>导航</h2>
@@ -53,21 +52,7 @@ const toSlugFromId = (id: string) =>
         <h2>博客</h2>
         <ul>
           {
-            blogCol1.map((entry: any) => (
-              <li class="font-bold">
-                <a href={`/blog/${entry.id}`} class="">
-                  {entry.data?.title ?? entry.id}
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
-      <div>
-        <h2>博客</h2>
-        <ul>
-          {
-            blogCol2.map((entry: any) => (
+            limitedBlogEntries.map((entry: any) => (
               <li class="font-bold">
                 <a href={`/blog/${entry.id}`} class="">
                   {entry.data?.title ?? entry.id}
@@ -81,7 +66,7 @@ const toSlugFromId = (id: string) =>
         <h2>摄影</h2>
         <ul>
           {
-            collectionEntries.map((entry: any) => (
+            limitedCollectionEntries.map((entry: any) => (
               <li class="font-bold">
                 <a href={`/collection/${entry.id}`} class="">
                   {entry.data?.title ?? entry.id}
